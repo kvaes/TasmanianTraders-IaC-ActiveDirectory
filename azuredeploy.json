@@ -58,7 +58,7 @@
     "apiVersion": "2015-06-15",
     "apiVersionManagedDisks": "2016-04-30-preview",
     "assetLocation":  "https://raw.githubusercontent.com/kvaes/TasmanianTraders-IaC-ActiveDirectory/master/",
-    "adDomainName": "tasmaniantraders.local",
+    "adDomainName": "tt.local",
     "adModulesURL": "[concat(variables('assetLocation'),'CreateADDomainWithData.ps1.zip')]",
     "adConfigurationFunction": "CreateADDomainWithData.ps1\\CreateADDomainWithData"
   },
