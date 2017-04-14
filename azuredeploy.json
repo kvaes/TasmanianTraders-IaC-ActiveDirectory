@@ -1,0 +1,147 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+    },
+    "vmPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "The prefix that will be used for the vm name"
+      }
+    },
+    "existingVirtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing VNET"
+      }
+    },
+    "existingVirtualNetworkResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing VNET resource group"
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the subnet in the virtual network you want to use"
+      }
+    }
+  },
+  "variables": {
+    "vmName": "addc01",
+    "vmFullName": "[concat(parameters('vmPrefix'),variables('vmName'))]",
+    "vmSize": "Standard_D1_v2",
+    "imagePublisher": "MicrosoftWindowsServer",
+    "imageOffer": "WindowsServer",
+    "windowsOSVersion": "2016-Datacenter",
+    "OSDiskName": "[concat('disk-',variables('vmName'),'-os')]",
+    "dataDisk1VhdName": "[concat('disk-',variables('vmName'),'-data01')]",
+    "storageAccountType": "Standard_LRS",
+    "nicName": "[concat('nic-',variables('vmName'))]",
+    "vnetName": "[parameters('existingVirtualNetworkName')]",
+    "vnetRG": "[parameters('existingVirtualNetworkResourceGroup')]",
+    "vnetSubnet": "[parameters('subnetName')]",
+    "vnetID": "[resourceId(variables('vnetRG'), 'Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/', variables('vnetSubnet'))]",
+    "apiVersion": "2015-06-15",
+    "apiVersionManagedDisks": "2016-04-30-preview"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[variables('dataDisk1VhdName')]",
+      "apiVersion": "[variables('apiVersionManagedDisks')]",
+      "location": "[resourceGroup().location]",
+      "properties":
+      {
+        "creationData":
+        {
+          "createOption" : "Empty"
+        }
+      ,
+        "accountType" : "[variables('storageAccountType')]",
+        "diskSizeGB": "32"
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersionManagedDisks')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('vmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmFullName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[variables('windowsOSVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[variables('OSDiskName')]",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "lun": 2,
+              "name": "[variables('dataDisk1VhdName')]",
+              "createOption": "attach",
+              "managedDisk":
+              {
+                "id": "[resourceId('Microsoft.Compute/disks', 'myManagedDataDisk')]"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
