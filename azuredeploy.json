@@ -101,7 +101,7 @@
     {
       "apiVersion": "[variables('apiVersionManagedDisks')]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('vmName')]",
+      "name": "[variables('vmFullName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
