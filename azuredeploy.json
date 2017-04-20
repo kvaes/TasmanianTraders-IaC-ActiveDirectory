@@ -37,6 +37,18 @@
       "metadata": {
         "description": "Name of the subnet in the virtual network you want to use"
       }
+    },
+    "dscRegistrationKey": {
+      "type": "string",
+      "metadata": {
+        "description": "Registration key to use to onboard to the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "dscRegistrationUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Registration url of the Azure Automation DSC pull/reporting server"
+      }
     }
   },
   "variables": {
@@ -57,10 +69,10 @@
     "subnetRef": "[concat(variables('vnetID'),'/subnets/', variables('vnetSubnet'))]",
     "apiVersion": "2015-06-15",
     "apiVersionManagedDisks": "2016-04-30-preview",
-    "assetLocation":  "https://raw.githubusercontent.com/kvaes/TasmanianTraders-IaC-ActiveDirectory/master/",
-    "adDomainName": "tt.local",
-    "adModulesURL": "[concat(variables('assetLocation'),'CreateADDomainWithData.ps1.zip')]",
-    "adConfigurationFunction": "CreateADDomainWithData.ps1\\CreateADDomainWithData"
+    "dscLinkedTemplateUri":  "https://raw.githubusercontent.com/kvaes/TasmanianTraders-IaC-AzureAutomationDSC/master/RegisterVirtualMachine/azuredeploy.json",
+    "dscRegistrationKey": "[parameters('dscRegistrationKey')]",
+    "dscRegistrationUrl": "[parameters('dscRegistrationUrl')]",
+    "dscNodeConfigurationName": "DscConfDomainController.DomainController"
   },
   "resources": [
     {
@@ -145,41 +157,36 @@
             }
           ]
         }
-      },
-      "resources": [
-        {
-          "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('vmFullName'),'/CreateADForest')]",
-          "apiVersion": "2015-05-01-preview",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('vmFullName'))]"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.11",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "ModulesUrl": "[variables('adModulesURL')]",
-              "ConfigurationFunction": "[variables('adConfigurationFunction')]",
-              "Properties": {
-                "DomainName": "[variables('adDomainName')]",
-                "AdminCreds": {
-                  "UserName": "[parameters('adminUserName')]",
-                  "Password": "PrivateSettingsRef:AdminPassword"
-                }
-              }
-            },
-            "protectedSettings": {
-              "Items": {
-                "AdminPassword": "[parameters('adminPassword')]"
-              },
-              "DataBlobUri": "[concat(variables('assetLocation'),'CreateADDomainWithData.psd1')]"
-            }
-          }
-        }
-      ]
-    }
+      }
+    },
+    { 
+      "apiVersion": "2015-01-01", 
+      "name": "linkedTemplate", 
+      "type": "Microsoft.Resources/deployments", 
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmFullName'))]"
+      ],
+      "properties": { 
+        "mode": "incremental", 
+        "templateLink": {
+          "uri": "[variables('dscLinkedTemplateUri')]",
+          "contentVersion": "1.0.0.0"
+        }, 
+        "parameters": { 
+          "vmName":{
+            "value": "[variables('vmFullName')]"
+          },
+          "registrationKey":{
+            "value": "[variables('dscRegistrationKey')]"
+          },
+          "registrationUrl":{
+            "value": "[variables('dscRegistrationUrl')]"
+          },
+          "nodeConfigurationName":{
+            "value": "[variables('dscNodeConfigurationName')]"
+          } 
+        } 
+      } 
+    } 
   ]
 }
