@@ -116,7 +116,8 @@
       "name": "[variables('vmFullName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
+        "[concat('Microsoft.Compute/disks/', variables('dataDisk1VhdName'))]"
       ],
       "properties": {
         "hardwareProfile": {
