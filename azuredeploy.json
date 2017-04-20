@@ -162,7 +162,7 @@
     },
     { 
       "apiVersion": "2015-01-01", 
-      "name": "linkedTemplate", 
+      "name": "linkedTemplateDscPullServer", 
       "type": "Microsoft.Resources/deployments", 
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmFullName'))]"
