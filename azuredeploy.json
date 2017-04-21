@@ -2,6 +2,17 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "dcType": {
+      "type": "string",
+      "allowedValues": [
+        "FirstDC",
+        "AdditionalDC"
+      ],
+      "defaultValue": "AdditionalDC",
+      "metadata": {
+        "description": "Is it the first domain controller (new domain/forest) or will you be adding one?"
+      }
+    },
     "adminUsername": {
       "type": "string",
       "metadata": {
@@ -72,7 +83,7 @@
     "dscLinkedTemplateUri":  "https://raw.githubusercontent.com/kvaes/TasmanianTraders-IaC-AzureAutomationDSC/master/RegisterVirtualMachine/azuredeploy.json",
     "dscRegistrationKey": "[parameters('dscRegistrationKey')]",
     "dscRegistrationUrl": "[parameters('dscRegistrationUrl')]",
-    "dscNodeConfigurationName": "DscConfDomainController.DomainController"
+    "dscNodeConfigurationName": "[concat('DscConfDomainController.',parameters('dcType'))]"
   },
   "resources": [
     {
