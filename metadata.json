@@ -1,7 +1,7 @@
 {
-  "itemDisplayName": "Deploy the a domaincontroller",
-  "description": "Deploy the a domaincontroller",
-  "summary": "Deploy the a domaincontroller",
+  "itemDisplayName": "Deploy a domaincontroller by using Azure Automation DSC",
+  "description": "The domain controller can be a first DC (creating a new forest/domain) or join an existing domain. The IP will be allocated dynamically by Azure and converted to a static one.",
+  "summary": "Deploy a domaincontroller by using Azure Automation DSC",
   "githubUsername": "kvaes",
   "dateUpdated": "2017-04-14"
 }
