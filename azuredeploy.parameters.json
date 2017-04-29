@@ -1,0 +1,33 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dcType": {
+      "value": "FirstDC"
+    },
+    "adminUsername": {
+      "value": "azuretest"
+    },
+    "adminPassword": {
+      "value": "MyNotSoSecretPassword?666"
+    },
+    "vmPrefix": {
+      "value": "tt-"
+    },
+    "existingVirtualNetworkName": {
+      "value": "VNET040"
+    },
+    "existingVirtualNetworkResourceGroup": {
+      "value": "tt-network-dev"
+    },
+    "subnetName": {
+      "value": "SUBNET1"
+    },
+    "dscRegistrationKey": {
+      "value": "MyCoolRegistrationKey"
+    },
+    "dscRegistrationUrl": {
+      "value": "https://we-agentservice-prod-1.azure-automation.net/accounts/automationaccountid"
+    }
+  }
+}
