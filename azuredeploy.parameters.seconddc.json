@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "dcType": {
-      "value": "FirstDC"
+      "value": "AdditionalDC"
     },
     "adminUsername": {
       "value": "azuretest"

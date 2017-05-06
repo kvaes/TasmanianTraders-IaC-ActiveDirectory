@@ -31,6 +31,12 @@
         "description": "The prefix that will be used for the vm name"
       }
     },
+	"vmSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "The suffix that will be used for the vm name"
+      }
+    },
     "existingVirtualNetworkName": {
       "type": "string",
       "metadata": {
@@ -63,8 +69,8 @@
     }
   },
   "variables": {
-    "vmName": "addc01",
-    "vmFullName": "[concat(parameters('vmPrefix'),variables('vmName'))]",
+    "vmName": "addc",
+    "vmFullName": "[concat(parameters('vmPrefix'),variables('vmName'),parameters('vmSuffix'))]",
     "vmSize": "Standard_D1_v2",
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
